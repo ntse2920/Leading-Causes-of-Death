@@ -1,0 +1,178 @@
+<!doctype>
+<html>
+<head>
+<style>
+    .card:hover{
+        transition: 2s;
+        color: green;
+        box-shadow: blue 5px 5px 5px;
+        opacity: 1;
+	}
+	input[type=text]{
+		width:100%;
+		padding:12px 20px;
+		margin: 8px 0;
+		box-sizing: border-box;
+		border: none;
+		background-color: whitesmoke;
+		-webkit-text-fill-color: black
+	}
+
+	body {
+		font-size: 28px;
+	}
+
+	.button	 {
+		background-color:lightskyblue;
+		border:none;
+		color: white;
+		padding:15px 32px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		font-size: 16px;
+		margin: 4px 2px;
+		cursor:pointer;
+		border-radius:10px;
+	}
+
+	ul {
+		list-style-type: none;
+		margin: 0;
+		padding: 3;
+		overflow: hidden;
+		background-color: #333;
+		position: -webkit-sticky;
+		position: sticky;
+		top: 0;
+	}
+
+	li {
+		float: left;
+	}
+
+	li a {
+		display: block;
+		color: white;
+		text-align: center;
+		padding: 14px 16px;
+		text-decoration: none;
+	}
+
+	li a:hover {
+		-webkit-text-fill-color: black;
+		background-color: white;
+	}
+
+	.active {
+		background-color: lightskyblue;
+	}
+
+	.active1 {
+		background-color: orangered;
+	}
+
+	.card{
+		background-color: lightcyan;
+		width:300px;
+		padding:10px;
+		margin:10px;
+		display:inline-block;
+		border-radius:10px;
+		box-shadow:orangered 5px 5px 5px;
+	}
+
+	h1{
+		font-family:"impact";
+		text-shadow:white 2px 2px 2px;
+		font-size:20pt;
+	}
+
+	p,a{
+		font-size:14pt;
+		font-family:"Arial";
+	}
+
+	img{
+		width:90%;
+		margin:5px;
+		border-radius:10px;
+		box-shadow:black 5px 5px 5px;
+	}
+
+	a{
+		background-color:blue;
+		text-decoration:none;
+		color:white;
+		font-weight:bold;
+		padding:5px;
+		border-radius:10px;
+		box-shadow:black 5px 5px 5px;
+	}
+
+</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
+<script type="text/template" id="dtmp">
+	<div class="card">
+		<h1 id="h1">Cause:  {{leading_cause}} </h1>
+		<p>Deaths:  {{deaths}} </p>
+		<p>Gender:  {{sex}} </p>
+        <p>Race:  {{race_ethnicity}} </p>
+		<marquee> {{ year }} </marquee>
+	</div>
+</script>
+<script>
+	var data;
+	function search(){				
+		$.getJSON("https://data.cityofnewyork.us/resource/uvxr-2jwn.json",function(results){
+			data = results;
+		})
+	}
+
+	function display(){
+		var build = "";
+		var output = document.getElementById("output")
+		var cause = document.getElementById("cause")
+        var year = document.getElementById("year");
+		var tmp = document.getElementById("dtmp").innerHTML;
+        var count = 0;
+		
+		for(var index = 0; index < data.length; index++){
+			if((data[index].leading_cause.toLowerCase().indexOf(cause.value.toLowerCase()) != -1) && (data[index].year) == (year.value)){
+				build += Mustache.render(tmp,data[index]);
+                count += 1
+			}
+        }
+		output.innerHTML = "<h1>Accidents: " + count + "</h1>" + build;	
+	}
+	
+</script>
+</head>
+<body background="https://assets.awwwards.com/awards/images/2015/04/pattern.jpg"></body>
+<body onload="search()">
+	<ul>
+    <li><a class="active">Home</a></li>
+    <li><a class="active1"href="https://data.cityofnewyork.us/resource/uvxr-2jwn.json">JSON</a></li>
+    <li><a class="active1"href="https://data.cityofnewyork.us/Health/New-York-City-Leading-Causes-of-Death/jb7j-dtam">Website</a></li>
+    </ul>
+	<h1> Leading Causes Of Death </h1>
+<div class="container">
+  <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo">Summary</button>
+  <div id="demo" class="collapse">
+<h3>This website displays the leading causes of death from 2007 to 2014.
+	This website imports the JSON from NYC Open Data.
+	This website will display the cause of death, amount of deaths, the gender, and the race.
+	This information will be useful for showing what deaths occured during which year.</h3>
+  </div>
+</div>
+	<input type="text" id="year" placeholder="Enter Year"><h3>2007 ~ 2014</h3>
+	<input type="text" id="cause" placeholder="Enter Cause"><h3>Accidents, Assault, Cancer, Diabetes, Disease, HIV, Mental, Other Causes</h3>
+	<button class = "button" onclick="display()"> Display</button><br>
+	<div id="output">
+	</div>
+</body>
+</html>
